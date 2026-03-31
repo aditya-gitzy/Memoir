@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memoir | A Look Back At Us</title>
     
+    <meta name="author" content="Aditya Lande">
+    <meta name="copyright" content="Aditya Lande">
+    
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
     
     <style>
@@ -329,7 +332,7 @@
             backdrop-filter: blur(5px);
         }
 
-        /* The new subtle copyright footer */
+        /* The subtle copyright footer */
         .memoir-copyright {
             position: fixed;
             bottom: 15px;
@@ -339,8 +342,8 @@
             font-family: var(--font-ui);
             opacity: 0.6;
             transition: opacity 0.3s ease;
-            z-index: 50; /* Keeps it behind the main container if you resize the window small */
-            pointer-events: none; /* Makes sure it doesn't accidentally block any clicks */
+            z-index: 50; 
+            pointer-events: none; 
         }
         .memoir-copyright:hover {
             opacity: 1;
@@ -398,6 +401,11 @@
     </div>
 
     <script>
+    
+        console.info("%cMemoir | Built by Aditya Lande", "color: #2b5c65; font-style: italic; padding: 5px;");
+        const _memoirAuthToken = atob("T3JpZ2luYWwgY29uY2VwdCBhbmQgY29kZSBieSBBZGl0eWEgTGFuZGU=");
+        
+
         function toggleTheme() {
             const body = document.body;
             const toggleBtn = document.getElementById('themeToggle');
