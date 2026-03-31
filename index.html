@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memoir | A Look Back At Us</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color-1: #fdfbf7;
+            --bg-color-2: #f4eee0;
+            --bg-color-3: #e8f0f2;
+            --bg-color-4: #f3e8e6;
+            --text-main: #2c2a25;
+            --text-muted: #888;
+            --sender-color: #2b5c65; 
+            --card-bg: rgba(255, 255, 255, 0.4); 
+            --card-border: rgba(255, 255, 255, 0.6);
+            --btn-bg: #2c2a25;
+            --btn-text: #ffffff;
+            --input-bg: rgba(255, 255, 255, 0.6);
+            --input-border: rgba(0, 0, 0, 0.08);
+            --input-focus-ring: rgba(43, 92, 101, 0.15);
+            --highlight-bg: #ffeaa7;
+            --highlight-active: #fab1a0;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --orb-center: rgba(212, 163, 115, 0.5); 
+            
+            --font-ui: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-chat: 'Consolas', monospace;
+        }
+
+        [data-theme="dark"] {
+            --bg-color-1: #121212;
+            --bg-color-2: #16181d;
+            --bg-color-3: #121419;
+            --bg-color-4: #151518;
+            --text-main: #e0e0e0;
+            --text-muted: #777;
+            --sender-color: #a2c4c9; 
+            --card-bg: rgba(25, 25, 30, 0.4); 
+            --card-border: rgba(255, 255, 255, 0.08);
+            --btn-bg: #0078d4;
+            --btn-text: #ffffff;
+            --input-bg: rgba(0, 0, 0, 0.4);
+            --input-border: rgba(255, 255, 255, 0.1);
+            --input-focus-ring: rgba(0, 120, 212, 0.3);
+            --highlight-bg: rgba(255, 215, 0, 0.3);
+            --highlight-active: #ff4757;
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --orb-center: rgba(50, 100, 200, 0.15); 
+        }
+
+        body { 
+            font-family: var(--font-ui); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 40px 20px; 
+            line-height: 1.6; 
+            min-height: 100vh;
+            background: linear-gradient(-45deg, var(--bg-color-1), var(--bg-color-2), var(--bg-color-3), var(--bg-color-4));
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            transition: color 0.4s ease;
+            position: relative;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            transition: background 0.5s ease;
+        }
+        
+        .orb-center {
+            width: 500px;
+            height: 500px;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--orb-center);
+            animation: pulse 10s infinite ease-in-out alternate;
+        }
+
+        .orb-side { 
+            width: 300px; 
+            height: 300px; 
+            bottom: 10%; 
+            right: 10%; 
+            background: var(--orb-center); 
+            opacity: 0.6;
+            animation: float 15s infinite ease-in-out alternate; 
+        }
+
+        @keyframes pulse {
+            0% { transform: translateX(-50%) scale(1); opacity: 0.8; }
+            100% { transform: translateX(-50%) scale(1.1); opacity: 1; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-40px); }
+        }
+
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: var(--card-bg); 
+            backdrop-filter: blur(25px); 
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px; 
+            box-shadow: 0 15px 35px var(--shadow-color), inset 0 0 0 1px rgba(255,255,255,0.1); 
+            position: relative; 
+            overflow: hidden;
+            transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+        
+        .sticky-header { 
+            position: sticky; 
+            top: 0; 
+            background: var(--card-bg); 
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            z-index: 1000; 
+            padding: 30px 40px; 
+            border-bottom: 1px solid var(--card-border); 
+            transition: background 0.4s ease;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: var(--text-main);
+        }
+        .theme-toggle:hover {
+            transform: rotate(30deg) scale(1.15);
+        }
+        
+        .header-titles {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 { 
+            font-family: 'Playfair Display', serif; 
+            font-style: italic;
+            font-size: 4rem; 
+            margin: 0 0 -5px 0; 
+            font-weight: 500; 
+            color: var(--sender-color); 
+            text-shadow: 2px 2px 6px var(--shadow-color);
+        }
+
+        .subtitle {
+            font-family: var(--font-ui);
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .controls-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .instructions {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        input[type="file"] { 
+            display: block; 
+            margin: 0 auto;
+            color: var(--text-main); 
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        button.primary-btn { 
+            background: var(--btn-bg); 
+            color: var(--btn-text); 
+            border: none; 
+            padding: 12px 28px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 15px; 
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+            margin: 0 auto;
+            display: block;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        button.primary-btn:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        button.primary-btn:active { 
+            transform: translateY(0); 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        #searchWrapper { display: none; gap: 12px; margin-top: 25px; align-items: center; flex-wrap: wrap; justify-content: center; }
+        
+        #searchInput { 
+            flex-grow: 1; 
+            box-sizing: border-box; 
+            padding: 12px 18px; 
+            background: var(--input-bg); 
+            border: 1px solid var(--input-border); 
+            color: var(--text-main); 
+            border-radius: 8px; 
+            font-size: 15px; 
+            max-width: 400px; 
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        #searchInput:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-color);
+            background: var(--card-bg);
+        }
+
+        #searchInput:focus { 
+            outline: none; 
+            border-color: var(--sender-color); 
+            box-shadow: 0 0 0 4px var(--input-focus-ring), 0 5px 15px var(--shadow-color); 
+            transform: translateY(-2px);
+            background: var(--card-bg);
+        }
+        
+        #searchMode { 
+            padding: 12px 16px; 
+            background: var(--input-bg); 
+            border: 1px solid var(--input-border); 
+            color: var(--text-main); 
+            border-radius: 8px; 
+            font-size: 14px; 
+            cursor: pointer; 
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        #searchMode:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-color);
+            background: var(--card-bg);
+        }
+
+        #searchMode:focus {
+            outline: none;
+            border-color: var(--sender-color);
+            box-shadow: 0 0 0 4px var(--input-focus-ring);
+        }
+        
+        #searchNav { display: none; align-items: center; gap: 8px; background: var(--input-bg); padding: 5px 12px; border-radius: 8px; border: 1px solid var(--input-border); backdrop-filter: blur(10px); }
+        #matchCount { color: var(--text-muted); font-size: 14px; min-width: 50px; text-align: center; font-weight: bold; }
+        
+        .nav-btn { background: transparent; border: none; color: var(--text-main); cursor: pointer; font-size: 1.2rem; padding: 4px 8px; border-radius: 6px; transition: all 0.2s; }
+        .nav-btn:hover { background: rgba(128, 128, 128, 0.2); transform: scale(1.1); }
+        .nav-btn:active { transform: scale(0.95); }
+        
+        pre { 
+            background: transparent; 
+            padding: 20px 40px 40px 40px; 
+            margin: 0; 
+            overflow-x: auto; 
+            white-space: pre-wrap; 
+            font-family: var(--font-chat); 
+            font-size: 14.5px; 
+            color: var(--text-main); 
+            line-height: 1.8; 
+            border: none;
+            transition: color 0.4s ease;
+        }
+
+        .chat-meta { color: var(--text-muted); font-size: 0.9em; margin-right: 5px; }
+        .chat-sender { font-weight: bold; color: var(--sender-color); margin-right: 5px; }
+        .chat-text { color: var(--text-main); }
+
+        .date-divider {
+            text-align: center;
+            margin: 35px 0 25px 0;
+            position: relative;
+            font-family: var(--font-ui);
+        }
+        .date-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            border-top: 1px solid var(--input-border);
+            z-index: 1;
+        }
+        .date-divider span {
+            background: var(--card-bg);
+            padding: 5px 15px;
+            color: var(--text-muted);
+            font-size: 0.85em;
+            font-weight: 600;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 2;
+            border-radius: 20px;
+            border: 1px solid var(--input-border);
+            backdrop-filter: blur(5px);
+        }
+
+        /* The new subtle copyright footer */
+        .memoir-copyright {
+            position: fixed;
+            bottom: 15px;
+            right: 25px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: var(--font-ui);
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
+            z-index: 50; /* Keeps it behind the main container if you resize the window small */
+            pointer-events: none; /* Makes sure it doesn't accidentally block any clicks */
+        }
+        .memoir-copyright:hover {
+            opacity: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-in { animation: fadeIn 0.6s ease forwards; }
+        
+        mark.search-match { background-color: var(--highlight-bg); color: #000; padding: 2px 4px; border-radius: 3px; transition: all 0.2s; }
+        mark.active-match { background-color: var(--highlight-active); color: #fff; transform: scale(1.1); display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="orb orb-center"></div>
+    <div class="orb orb-side"></div>
+
+    <div class="container">
+        <div class="sticky-header">
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
+
+            <div class="header-titles">
+                <h1>Memoir</h1>
+                <p class="subtitle">A look back at us.</p>
+            </div>
+            
+            <div class="controls-wrapper">
+                <div class="instructions">Select your <code>message_X.html</code> files, then click to reverse and format.</div>
+                <input type="file" id="fileInput" multiple accept=".html">
+                <button class="primary-btn" onclick="processFiles()">Format & Reverse Chats</button>
+                
+                <div id="searchWrapper">
+                    <input type="text" id="searchInput" placeholder="Search your memories..." oninput="handleSearch()">
+                    <select id="searchMode" onchange="handleSearch()">
+                        <option value="context">Context (Full chat)</option>
+                        <option value="isolate">Isolate (Only matches)</option>
+                    </select>
+                    
+                    <div id="searchNav">
+                        <span id="matchCount">0/0</span>
+                        <button class="nav-btn" onclick="prevMatch()" title="Previous (Shift+Enter)">↑</button>
+                        <button class="nav-btn" onclick="nextMatch()" title="Next (Enter)">↓</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <pre id="output">Your timeline will gently appear here once loaded...</pre>
+    </div>
+
+    <div class="memoir-copyright">
+        &copy; 2026 Memoir. Made by Aditya Lande. All rights reserved.
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const toggleBtn = document.getElementById('themeToggle');
+            
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                toggleBtn.innerText = '🌙';
+                localStorage.setItem('memoirTheme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                toggleBtn.innerText = '☀️';
+                localStorage.setItem('memoirTheme', 'dark');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('memoirTheme');
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerText = '☀️';
+            }
+        });
+
+        let globalMessages = [];
+        let currentMatchIndex = -1;
+        let matchElements = [];
+        let searchTimeout; 
+
+        document.getElementById('searchInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault(); 
+                if (e.shiftKey) {
+                    prevMatch();
+                } else {
+                    nextMatch();
+                }
+            }
+        });
+
+        function escapeHTML(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function isTimestamp(text) {
+            if (text.length < 10 || text.length > 40) return false;
+            if (!/\b20\d{2}\b/.test(text) || !/:/.test(text)) return false;
+            let clean = text.replace(/p\.m\./i, 'PM').replace(/a\.m\./i, 'AM').replace(/at/i, '');
+            let d = new Date(clean);
+            if (!isNaN(d.getTime())) return true;
+            let letterCount = (text.match(/[a-zA-Z]/g) || []).length;
+            if (letterCount <= 10) return true;
+            return false;
+        }
+
+        async function processFiles() {
+            const input = document.getElementById('fileInput');
+            const output = document.getElementById('output');
+            if (!input.files.length) return alert("Please select the files first!");
+
+            output.classList.remove('animate-in');
+            output.innerText = "Dusting off the chat logs... hanging tight for a second.";
+            
+            const files = Array.from(input.files);
+            files.sort((a, b) => {
+                const numA = parseInt(a.name.match(/\d+/) || 0);
+                const numB = parseInt(b.name.match(/\d+/) || 0);
+                return numB - numA; 
+            });
+
+            let allMessages = [];
+
+            for (let file of files) {
+                const text = await file.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                
+                const walker = document.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT, null, false);
+                const textNodes = [];
+                let node;
+                while ((node = walker.nextNode())) {
+                    const txt = node.nodeValue.trim();
+                    if (txt) textNodes.push(txt);
+                }
+
+                const tsIndices = [];
+                for (let i = 0; i < textNodes.length; i++) {
+                    if (isTimestamp(textNodes[i])) tsIndices.push(i);
+                }
+
+                let fileMessages = [];
+                let lastSender = "Unknown";
+
+                for (let j = 0; j < tsIndices.length; j++) {
+                    let currTsIndex = tsIndices[j];
+                    let prevTsIndex = j === 0 ? -1 : tsIndices[j - 1];
+                    let chunk = textNodes.slice(prevTsIndex + 1, currTsIndex);
+
+                    if (j === 0) {
+                        const ignore = ["Saved messages", "Messages", "Instagram", "Message requests"];
+                        chunk = chunk.filter(t => !ignore.includes(t) && !t.startsWith("Participants:"));
+                    }
+
+                    if (chunk.length === 0) continue;
+
+                    let sender = "Unknown";
+                    let msg = "";
+
+                    if (chunk.length === 1) {
+                        sender = lastSender;
+                        msg = chunk[0];
+                    } else {
+                        sender = chunk[0];
+                        msg = chunk.slice(1).join(" | ");
+                        lastSender = sender;
+                    }
+
+                    let rawTime = textNodes[currTsIndex];
+                    let formattedTime = rawTime;
+                    
+                    try {
+                        let cleanTime = rawTime.replace(/p\.m\./i, 'PM').replace(/a\.m\./i, 'AM').replace(/at/i, '');
+                        let dateObj = new Date(cleanTime);
+                        if(!isNaN(dateObj.getTime())) {
+                            const d = String(dateObj.getDate()).padStart(2, '0');
+                            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+                            const y = dateObj.getFullYear();
+                            let hours = dateObj.getHours();
+                            const ampm = hours >= 12 ? 'PM' : 'AM';
+                            hours = hours % 12 || 12;
+                            const h = String(hours).padStart(2, '0');
+                            const min = String(dateObj.getMinutes()).padStart(2, '0');
+                            formattedTime = `${d}/${m}/${y} • ${h}:${min} ${ampm}`;
+                        }
+                    } catch(e) {}
+
+                    fileMessages.push({
+                        time: escapeHTML(formattedTime),
+                        sender: escapeHTML(sender),
+                        text: escapeHTML(msg)
+                    });
+                }
+                allMessages = allMessages.concat(fileMessages.reverse());
+            }
+
+            globalMessages = allMessages;
+            document.getElementById('searchWrapper').style.display = 'flex';
+            document.getElementById('searchMode').value = 'context';
+            
+            renderOutput(globalMessages);
+            
+            void output.offsetWidth; 
+            output.classList.add('animate-in');
+        }
+
+        function buildMessageHTML(m, searchRegex = null) {
+            let t = m.time;
+            let s = m.sender;
+            let txt = m.text;
+
+            if (searchRegex) {
+                t = t.replace(searchRegex, '<mark class="search-match">$1</mark>');
+                s = s.replace(searchRegex, '<mark class="search-match">$1</mark>');
+                txt = txt.replace(searchRegex, '<mark class="search-match">$1</mark>');
+            }
+
+            let justTime = t.split(' • ')[1] || t;
+
+            return `<span class="chat-meta">[${justTime}]</span><span class="chat-sender">${s}:</span><span class="chat-text">${txt}</span>`;
+        }
+
+        function renderOutput(messagesToRender, searchRegex = null) {
+            const output = document.getElementById('output');
+            if (messagesToRender.length === 0) {
+                output.innerHTML = "No moments found.";
+                return;
+            }
+
+            let htmlOutput = [];
+            let lastDate = "";
+
+            messagesToRender.forEach(m => {
+                let currentDate = m.time.split(' • ')[0]; 
+                
+                if (currentDate && currentDate !== lastDate) {
+                    htmlOutput.push(`\n<div class="date-divider"><span>${currentDate}</span></div>`);
+                    lastDate = currentDate;
+                }
+
+                htmlOutput.push(buildMessageHTML(m, searchRegex));
+            });
+
+            output.innerHTML = htmlOutput.join('\n');
+        }
+
+        function handleSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(executeSearch, 300);
+        }
+
+        function executeSearch() {
+            const term = document.getElementById('searchInput').value;
+            const mode = document.getElementById('searchMode').value;
+            const output = document.getElementById('output');
+            const nav = document.getElementById('searchNav');
+
+            nav.style.display = 'none';
+            currentMatchIndex = -1;
+            matchElements = [];
+
+            if (!term) {
+                let currentScroll = window.scrollY;
+                renderOutput(globalMessages);
+                window.scrollTo(0, currentScroll);
+                return;
+            }
+
+            const safeTerm = escapeHTML(term);
+            const regex = new RegExp(`(${safeTerm})`, 'gi');
+
+            if (mode === 'isolate') {
+                const filtered = globalMessages.filter(m => {
+                    const fullText = (m.time + " " + m.sender + " " + m.text).toLowerCase();
+                    return fullText.includes(term.toLowerCase());
+                });
+                renderOutput(filtered, regex);
+            } 
+            else if (mode === 'context') {
+                let htmlOutput = [];
+                let lastDate = "";
+
+                for (let i = 0; i < globalMessages.length; i++) {
+                    let m = globalMessages[i];
+                    const fullText = (m.time + " " + m.sender + " " + m.text).toLowerCase();
+                    
+                    let currentDate = m.time.split(' • ')[0]; 
+                    if (currentDate && currentDate !== lastDate) {
+                        htmlOutput.push(`\n<div class="date-divider"><span>${currentDate}</span></div>`);
+                        lastDate = currentDate;
+                    }
+
+                    if (fullText.includes(term.toLowerCase())) {
+                        htmlOutput.push(buildMessageHTML(m, regex));
+                    } else {
+                        htmlOutput.push(buildMessageHTML(m, null));
+                    }
+                }
+
+                output.innerHTML = htmlOutput.join('\n');
+
+                matchElements = document.querySelectorAll('.search-match');
+                
+                if (matchElements.length > 0) {
+                    nav.style.display = 'flex';
+                    goToMatch(0);
+                } else {
+                    output.innerHTML = "No moments found with those words.";
+                }
+            }
+        }
+
+        function goToMatch(index) {
+            if (matchElements.length === 0) return;
+            
+            if (index < 0) index = matchElements.length - 1;
+            if (index >= matchElements.length) index = 0;
+            
+            currentMatchIndex = index;
+            
+            matchElements.forEach(el => el.classList.remove('active-match'));
+
+            let activeEl = matchElements[currentMatchIndex];
+            activeEl.classList.add('active-match');
+
+            activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            document.getElementById('matchCount').innerText = `${currentMatchIndex + 1}/${matchElements.length}`;
+        }
+
+        function prevMatch() { goToMatch(currentMatchIndex - 1); }
+        function nextMatch() { goToMatch(currentMatchIndex + 1); }
+    </script>
+</body>
+</html>
