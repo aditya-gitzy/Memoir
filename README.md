@@ -1,4 +1,4 @@
-[<div align="center">
+<div align="center">
   <h1>Memoir 🕰️✨</h1>
   <p><em>A look back at us.</em></p>
   <p>A beautifully crafted, privacy-first web tool that turns your raw Instagram chat exports into a readable, nostalgic timeline.</p>
