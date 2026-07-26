@@ -374,6 +374,7 @@
             
             <div class="controls-wrapper">
                 <div class="instructions">Select your <code>message_X.html</code> files, then click to reverse and format.</div>
+			<button id="downloadBtn" class="primary-btn" style="display: none; margin-top: 10px; background: #9bd4a3; color: #2c2a25;" onclick="exportMemoir()">Download Memoir</button>
                 <input type="file" id="fileInput" multiple accept=".html">
                 <button class="primary-btn" onclick="processFiles()">Format & Reverse Chats</button>
                 
@@ -558,6 +559,7 @@
             
             void output.offsetWidth; 
             output.classList.add('animate-in');
+		document.getElementById('downloadBtn').style.display = 'block';
         }
 
         function buildMessageHTML(m, searchRegex = null) {
@@ -686,6 +688,72 @@
 
         function prevMatch() { goToMatch(currentMatchIndex - 1); }
         function nextMatch() { goToMatch(currentMatchIndex + 1); }
+	function exportMemoir() {
+    const outputContent = document.getElementById('output').innerHTML;
+    if (!outputContent || globalMessages.length === 0) return;
+
+    // Grab the current styles and theme state
+    const styles = document.querySelector('style').innerHTML;
+    const isDark = document.body.getAttribute('data-theme') === 'dark';
+    const themeAttr = isDark ? 'data-theme="dark"' : '';
+    const toggleIcon = isDark ? '☀️' : '🌙';
+
+    // Build the standalone HTML string
+    const htmlString = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memoir | A Look Back</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
+    <style>${styles}</style>
+</head>
+<body ${themeAttr}>
+    <div class="orb orb-center"></div>
+    <div class="orb orb-side"></div>
+    <div class="container" style="margin-top: 40px; padding-bottom: 30px;">
+        <div class="sticky-header">
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">${toggleIcon}</button>
+            <div class="header-titles" style="margin-bottom: 0;">
+                <h1>Memoir</h1>
+                <p class="subtitle">A look back at us.</p>
+            </div>
+        </div>
+        <pre id="output">${outputContent}</pre>
+    </div>
+    <div class="memoir-copyright">&copy; 2026 Memoir. Made by aditya-gitzy.</div>
+    
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.querySelector('.theme-toggle');
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                btn.innerText = '🌙';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                btn.innerText = '☀️';
+            }
+        }
+    <\/script>
+</body>
+</html>`;
+
+    // Create a Blob and trigger the download
+    const blob = new Blob([htmlString], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    
+    // Add a nice date stamp to the filename
+    const date = new Date().toISOString().split('T')[0];
+    a.download = `Memoir_${date}.html`;
+    
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
     </script>
 </body>
 </html>
